@@ -5,13 +5,9 @@ export const CategoriaSchema = new mongoose.Schema({
     descricao: {type: String},
     eventos: [
         {
-            nome: {type: String},
-            operacao: { type: String},
+            nome: { type: String },
+            operacao: { type: String },
             valor: { type: Number }
         }
-    ],
-    jogadores: [{
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Jogador"
-    }]
-}, {timestamps: true, collection: 'categorias'})
+    ]
+}, {timestamps: true, collection: 'categorias'});
