@@ -25,20 +25,33 @@ export class AppController {
     } catch (error) {
       this.logger.error(`error: ${JSON.stringify(error.message)}`)
 
-      ackErrors.map( async ackError => {
-        if (error.message.includes(ackError)) {
+        const filterAckError = ackErrors.filter(
+          ackError => error.message.includes(ackError))
+
+        if (filterAckError) {
           await channel.ack(originalMsg)
         }
-      })
+      
     }
   }
 
   @MessagePattern('consultar-categorias')
-  async consultarCategorias(@Payload() _id: string) {
-    if (_id) {
-      return await this.appService.consultarCategoriaPeloId(_id)
-    } else {
-      return await this.appService.consultarTodasCategorias()
+  async consultarCategorias(@Payload() _id: string, @Ctx() context: RmqContext) {
+
+
+    const channel = context.getChannelRef()
+    const originalMsg = context.getMessage()
+
+    try{
+      if (_id) {
+        return await this.appService.consultarCategoriaPeloId(_id)
+      } else {
+        return await this.appService.consultarTodasCategorias()
+      }
+
+    } finally {
+      await channel.ack(originalMsg)
     }
+
   }
 }
